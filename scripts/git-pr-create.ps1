@@ -1,6 +1,7 @@
 param(
   [string]$BaseBranch,
   [switch]$SkipGh,
+  [switch]$SkipApi,
   [switch]$DryRun
 )
 
@@ -43,6 +44,89 @@ function Resolve-BaseBranch {
   return "main"
 }
 
+function Get-OriginOwnerRepo {
+  param([Parameter(Mandatory = $true)][string]$RemoteUrl)
+
+  # Supports:
+  # - https://github.com/<owner>/<repo>.git
+  # - https://github.com/<owner>/<repo>
+  # - git@github.com:<owner>/<repo>.git
+  $url = $RemoteUrl.Trim()
+
+  $owner = $null
+  $repo = $null
+
+  if ($url -match "^git@github\\.com:(?<owner>[^/]+)/(?<repo>[^/]+?)(\\.git)?$") {
+    $owner = $Matches["owner"]
+    $repo = $Matches["repo"]
+  } elseif ($url -match "^https?://github\\.com/(?<owner>[^/]+)/(?<repo>[^/]+?)(\\.git)?/?$") {
+    $owner = $Matches["owner"]
+    $repo = $Matches["repo"]
+  }
+
+  if ([string]::IsNullOrWhiteSpace($owner) -or [string]::IsNullOrWhiteSpace($repo)) {
+    throw ("Unable to parse GitHub owner/repo from origin: " + $RemoteUrl)
+  }
+
+  return @($owner, $repo)
+}
+
+function Import-DotEnv {
+  param([Parameter(Mandatory = $true)][string]$Path)
+
+  if (-not (Test-Path $Path)) { return }
+
+  $lines = Get-Content -Path $Path -ErrorAction Stop
+  foreach ($line in $lines) {
+    $raw = $line.Trim()
+    if ([string]::IsNullOrWhiteSpace($raw)) { continue }
+    if ($raw.StartsWith("#")) { continue }
+
+    $idx = $raw.IndexOf("=")
+    if ($idx -le 0) { continue }
+
+    $name = $raw.Substring(0, $idx).Trim()
+    $value = $raw.Substring($idx + 1)
+
+    if ([string]::IsNullOrWhiteSpace($name)) { continue }
+
+    # Do not overwrite already-set values.
+    if (-not [string]::IsNullOrWhiteSpace((Get-Item ("Env:" + $name) -ErrorAction SilentlyContinue).Value)) {
+      continue
+    }
+
+    Set-Item -Path ("Env:" + $name) -Value $value | Out-Null
+  }
+}
+
+function Invoke-GitHubApi {
+  param(
+    [Parameter(Mandatory = $true)][string]$Method,
+    [Parameter(Mandatory = $true)][string]$Url,
+    [Parameter(Mandatory = $false)]$Body
+  )
+
+  $token = $env:GITHUB_TOKEN
+  if ([string]::IsNullOrWhiteSpace($token)) { $token = $env:GH_TOKEN }
+  if ([string]::IsNullOrWhiteSpace($token)) {
+    throw "Missing env var GITHUB_TOKEN (or GH_TOKEN)."
+  }
+
+  $headers = @{
+    "Authorization" = ("Bearer " + $token)
+    "Accept" = "application/vnd.github+json"
+    "X-GitHub-Api-Version" = "2022-11-28"
+    "User-Agent" = "auto-ai-copilot"
+  }
+
+  if ($null -eq $Body) {
+    return Invoke-RestMethod -Method $Method -Uri $Url -Headers $headers
+  }
+
+  $json = $Body | ConvertTo-Json -Depth 10
+  return Invoke-RestMethod -Method $Method -Uri $Url -Headers $headers -ContentType "application/json" -Body $json
+}
+
 $repoRoot = $null
 try {
   $repoRoot = Get-GitOutput @("rev-parse", "--show-toplevel")
@@ -52,6 +136,8 @@ try {
 
 Push-Location $repoRoot
 try {
+  Import-DotEnv -Path (Join-Path $repoRoot ".env")
+
   $base = Resolve-BaseBranch -Candidate $BaseBranch
   $branch = Get-GitOutput @("rev-parse", "--abbrev-ref", "HEAD")
   if ($branch -eq $base) {
@@ -84,9 +170,49 @@ try {
 
   $gh = Get-Command gh -ErrorAction SilentlyContinue
   if (-not $gh) {
-    Write-Host "GitHub CLI (gh) not found; pushed branch only."
-    Write-Host ("Next: open a PR into '" + $base + "' from branch '" + $branch + "'.")
-    exit 0
+    if ($SkipApi) {
+      Write-Host "GitHub CLI (gh) not found; pushed branch only (SkipApi enabled)."
+      Write-Host ("Next: open a PR into '" + $base + "' from branch '" + $branch + "'.")
+      exit 0
+    }
+
+    $token = $env:GITHUB_TOKEN
+    if ([string]::IsNullOrWhiteSpace($token)) { $token = $env:GH_TOKEN }
+    if ([string]::IsNullOrWhiteSpace($token)) {
+      Write-Host "GitHub CLI (gh) not found and GITHUB_TOKEN is not set; pushed branch only."
+      Write-Host ("Next: open a PR into '" + $base + "' from branch '" + $branch + "'.")
+      exit 0
+    }
+
+    $owner, $repo = Get-OriginOwnerRepo -RemoteUrl $remote
+    $apiBase = ("https://api.github.com/repos/" + $owner + "/" + $repo)
+
+    try {
+      $pr = Invoke-GitHubApi -Method "POST" -Url ($apiBase + "/pulls") -Body @{
+        title = $title
+        head  = $branch
+        base  = $base
+        body  = "Created by Codex agent."
+      }
+
+      Write-Host ("PR created: " + $pr.html_url)
+      exit 0
+    } catch {
+      # If PR already exists, try to find it.
+      try {
+        $prs = Invoke-GitHubApi -Method "GET" -Url ($apiBase + "/pulls?state=open&head=" + $owner + ":" + $branch + "&base=" + $base + "&per_page=1")
+        if ($prs -and $prs.Count -ge 1 -and $prs[0].html_url) {
+          Write-Host ("PR already exists: " + $prs[0].html_url)
+          exit 0
+        }
+      } catch {
+        # ignore lookup errors
+      }
+
+      Write-Host "Unable to create PR via GitHub API; pushed branch only."
+      Write-Host ("Next: open a PR into '" + $base + "' from branch '" + $branch + "'.")
+      exit 0
+    }
   }
 
   try {
