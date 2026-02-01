@@ -1,0 +1,5 @@
+{
+  "presetUrl": "https://ui.shadcn.com/init?base=radix&style=vega&baseColor=neutral&theme=neutral&iconLibrary=lucide&font=inter&menuAccent=subtle&menuColor=default&radius=default&template=vite",
+  "template": "vite",
+  "notes": "Generated via ui.shadcn.com/create. Keep token values in code (Tailwind theme/CSS variables), not in docs-ai docs."
+}

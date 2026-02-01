@@ -1,0 +1,26 @@
+# Ignore Excel/binary spreadsheet artifacts (do not commit)
+*.xlsx
+*.xls
+*.xlsm
+*.xlsb
+~$*.xlsx
+
+# Conversation transcripts can contain sensitive info and get large.
+# Keep only curated summaries in Git.
+docs-ai/agents-artifacts/conversations/*.transcript.md
+
+# UI testing artifacts (do not commit)
+auth.json
+docs-ai/agents-artifacts/screenshots/*
+!docs-ai/agents-artifacts/screenshots/README.md
+docs-ai/agents-artifacts/traces/*
+!docs-ai/agents-artifacts/traces/README.md
+docs-ai/agents-artifacts/videos/*
+!docs-ai/agents-artifacts/videos/README.md
+docs-ai/agents-artifacts/playwright-report/*
+!docs-ai/agents-artifacts/playwright-report/README.md
+test-results/
+
+# Git worktrees (do not commit)
+.worktrees/
+
