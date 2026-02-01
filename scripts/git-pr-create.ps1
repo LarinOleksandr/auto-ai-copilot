@@ -71,6 +71,34 @@ function Get-OriginOwnerRepo {
   return @($owner, $repo)
 }
 
+function Import-DotEnv {
+  param([Parameter(Mandatory = $true)][string]$Path)
+
+  if (-not (Test-Path $Path)) { return }
+
+  $lines = Get-Content -Path $Path -ErrorAction Stop
+  foreach ($line in $lines) {
+    $raw = $line.Trim()
+    if ([string]::IsNullOrWhiteSpace($raw)) { continue }
+    if ($raw.StartsWith("#")) { continue }
+
+    $idx = $raw.IndexOf("=")
+    if ($idx -le 0) { continue }
+
+    $name = $raw.Substring(0, $idx).Trim()
+    $value = $raw.Substring($idx + 1)
+
+    if ([string]::IsNullOrWhiteSpace($name)) { continue }
+
+    # Do not overwrite already-set values.
+    if (-not [string]::IsNullOrWhiteSpace((Get-Item ("Env:" + $name) -ErrorAction SilentlyContinue).Value)) {
+      continue
+    }
+
+    Set-Item -Path ("Env:" + $name) -Value $value | Out-Null
+  }
+}
+
 function Invoke-GitHubApi {
   param(
     [Parameter(Mandatory = $true)][string]$Method,
@@ -107,6 +135,8 @@ try {
 
 Push-Location $repoRoot
 try {
+  Import-DotEnv -Path (Join-Path $repoRoot ".env")
+
   $base = Resolve-BaseBranch -Candidate $BaseBranch
   $branch = Get-GitOutput @("rev-parse", "--abbrev-ref", "HEAD")
   if ($branch -eq $base) {
