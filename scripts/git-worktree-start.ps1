@@ -226,6 +226,19 @@ try {
   New-Item -ItemType Directory -Force -Path (Split-Path $worktreePath -Parent) | Out-Null
   Invoke-Git @("worktree", "add", "-b", $branchName, $worktreePath, $base)
 
+  # Convenience: copy local .env (secrets) into the new worktree if present.
+  # `.env` is ignored by git and should never be committed.
+  $srcEnv = Join-Path $anchorRootFull ".env"
+  $dstEnv = Join-Path (Join-Path $anchorRootFull $worktreePath) ".env"
+  if ((Test-Path $srcEnv) -and (-not (Test-Path $dstEnv))) {
+    try {
+      Copy-Item -Path $srcEnv -Destination $dstEnv -Force
+      Write-Host "Copied .env into worktree."
+    } catch {
+      Write-Host "Unable to copy .env into worktree; continuing."
+    }
+  }
+
   Write-Host "Worktree created."
   Write-Host ("Next: cd " + (Join-Path $anchorRootFull $worktreePath))
 } finally {
