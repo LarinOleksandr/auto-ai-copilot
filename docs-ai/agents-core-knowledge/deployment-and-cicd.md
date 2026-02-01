@@ -80,7 +80,7 @@ Track deploy/go-live work in a dedicated deploy thread (see `KB_THREADS`), so re
   - record the active provider in `DOC_PROJECT_INSIGHTS` when selected/changed
   - keep the inactive provider's template intact, but do not maintain two live deploy integrations for `main`
 - Any provider switch must include:
-  - updated env var list (`docs-ai/project-knowledge/env-vars.md` variable names only)
+  - updated env var documentation (variable names only)
   - updated build/deploy instructions
   - a smoke checklist for `main` deploy
 
@@ -89,7 +89,7 @@ Track deploy/go-live work in a dedicated deploy thread (see `KB_THREADS`), so re
 ## Environment variables (policy)
 
 - All environment-specific config comes from env vars and layered config (see `KB_REPOSITORY_RULES`).
-- Keep `docs-ai/project-knowledge/env-vars.md` as the canonical list of required vars (names only; never secrets).
+- Keep required env var names documented (names only; never secrets).
 - Any deployment work must include:
   - list of required vars per runtime boundary
   - which system sets them (Netlify/Vercel/Supabase/VM)
