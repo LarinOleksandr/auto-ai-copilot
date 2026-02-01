@@ -12,7 +12,7 @@ Applies to `infra/**` (Docker, compose files, deployment configs, runtime infras
 - Changes must preserve the ability to run the full local stack.
 - Service boundaries are explicit (names, ports, networks).
 - Avoid cross-service coupling via shared volumes unless required.
-- Configuration via environment variables; update `docs-ai/project-knowledge/env-vars.md` when variables change.
+- Configuration via environment variables; document variable names in project docs (never commit secrets).
 - Multi-service infra changes require planning.
 - Prefer a single `infra/docker/docker-compose.yml` with profiles over multiple compose files.
 

@@ -46,7 +46,7 @@
 ## Environment rules
 
 - Env vars only; no hardcoded values.
-- `docs-ai/project-knowledge/env-vars.md` defines required variables (names only).
+- Required variables should be documented (names only).
 
 ---
 
