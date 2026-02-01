@@ -107,8 +107,9 @@ function Invoke-GitHubApi {
   )
 
   $token = $env:GITHUB_TOKEN
+  if ([string]::IsNullOrWhiteSpace($token)) { $token = $env:GH_TOKEN }
   if ([string]::IsNullOrWhiteSpace($token)) {
-    throw "Missing env var GITHUB_TOKEN."
+    throw "Missing env var GITHUB_TOKEN (or GH_TOKEN)."
   }
 
   $headers = @{
@@ -176,6 +177,7 @@ try {
     }
 
     $token = $env:GITHUB_TOKEN
+    if ([string]::IsNullOrWhiteSpace($token)) { $token = $env:GH_TOKEN }
     if ([string]::IsNullOrWhiteSpace($token)) {
       Write-Host "GitHub CLI (gh) not found and GITHUB_TOKEN is not set; pushed branch only."
       Write-Host ("Next: open a PR into '" + $base + "' from branch '" + $branch + "'.")
