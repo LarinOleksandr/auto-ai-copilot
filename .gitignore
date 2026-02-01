@@ -27,5 +27,4 @@ test-results/
 # Local environment secrets (do not commit)
 .env
 .env.*
-!.env.example
 

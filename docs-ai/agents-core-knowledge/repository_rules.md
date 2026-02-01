@@ -93,7 +93,7 @@ Global defaults live under `config/runtime/`. Service-specific runtime configura
 
 Never commit secrets to the repository.
 
-Do not add real API keys, passwords, tokens, or other secrets to code, config files, or tests. Only `.env.example` templates and documented variable names are allowed in Git. Real secrets are passed via environment variables, secret managers, or local `.env` files that are ignored by `.gitignore`.
+Do not add real API keys, passwords, tokens, or other secrets to code, config files, or tests. Only documented variable names are allowed in Git (see `docs-ai/project-knowledge/env-vars.md`). Real secrets are passed via environment variables, secret managers, or local `.env` files that are ignored by `.gitignore`.
 
 ### shared-types-source-of-truth (must)
 

@@ -46,7 +46,7 @@
 ## Environment rules
 
 - Env vars only; no hardcoded values.
-- `.env.example` defines required variables.
+- `docs-ai/project-knowledge/env-vars.md` defines required variables (names only).
 
 ---
 

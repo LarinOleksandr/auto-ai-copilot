@@ -18,7 +18,7 @@
   - Why: there is no official way for an app to list ChatGPT Projects/Chats directly; this preserves the “use my real Projects/Chats” requirement.
 - Decision: v1 must be free to run (no paid app/services/APIs) except an existing ChatGPT Plus subscription and free Google Drive.
   - Why: explicit constraint from the user.
-- Decision: store GitHub tokens outside Git using a local `.env` file (ignored), and keep `.env.example` committed.
+- Decision: store GitHub tokens outside Git using a local `.env` file (ignored), and document variable names in `docs-ai/project-knowledge/env-vars.md`.
   - Why: framework rule “secrets outside git”, plus convenience for automation.
 
 ## Key points
@@ -31,7 +31,7 @@
 - Workflow alignment:
   - Follow “strict order” in the framework: repo bootstrap when not a git repo -> project setup docs -> plan creation -> implementation.
 - Repo automation:
-  - Added `.env.example`, ignored `.env`, updated PR tooling so PR creation can use GitHub API token when `gh` is missing.
+  - Added env var documentation (`docs-ai/project-knowledge/env-vars.md`), ignored `.env`, updated PR tooling so PR creation can use GitHub API token when `gh` is missing.
 
 ## Open questions / follow-ups
 

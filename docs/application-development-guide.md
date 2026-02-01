@@ -437,7 +437,7 @@ Use the project's deployment rules:
 
 ### 8.3 Minimum go-live checklist
 
-- Required environment variables are documented (names only) in `.env.example`
+- Required environment variables are documented (names only) in `docs-ai/project-knowledge/env-vars.md`
 - Deployment target is configured (Netlify or Vercel)
 - A minimal smoke check passes (app loads and core flow works)
 - The decision and any operational notes are recorded in project docs during `$commit-push-create-pr`
