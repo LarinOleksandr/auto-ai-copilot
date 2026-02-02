@@ -7,7 +7,7 @@
 - 1. [Done] PRD created (voice-first ChatGPT on Android)
 - 2. [Done] Repo bootstrap (git repo + initial commit + remote)
 - 3. [In Progress] Project foundation docs (`DOC_PROJECT_CONTEXT`, `DOC_PROJECT_ROADMAP`, `DOC_PROJECT_INSIGHTS`)
-- 4. [Not Started] Feasibility spike: Accessibility can reliably read Projects/Chats and tap to open them
+- 4. [Done] Feasibility spike: Accessibility can reliably read Projects/Chats and tap to open them
 - 5. [Not Started] Define v1 command set (voice phrases) + “interrupt anytime” behavior
 - 6. [Not Started] v1 execution plan via `$plan-creation`
 
