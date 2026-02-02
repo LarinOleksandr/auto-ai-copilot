@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:padding="16dp">
+
+  <Button
+    android:id="@+id/openAccessibilitySettings"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:text="Open Accessibility Settings"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"/>
+
+  <Button
+    android:id="@+id/detectScreen"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:text="Detect Screen"
+    app:layout_constraintTop_toBottomOf="@id/openAccessibilitySettings"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    android:layout_marginTop="8dp"/>
+
+  <Button
+    android:id="@+id/readTitles"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:text="Read Titles"
+    app:layout_constraintTop_toBottomOf="@id/detectScreen"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    android:layout_marginTop="8dp"/>
+
+  <Button
+    android:id="@+id/scrollToEnd"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:text="Scroll To End"
+    app:layout_constraintTop_toBottomOf="@id/readTitles"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    android:layout_marginTop="8dp"/>
+
+  <Button
+    android:id="@+id/openFirstTitle"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:text="Open First Title"
+    app:layout_constraintTop_toBottomOf="@id/scrollToEnd"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    android:layout_marginTop="8dp"/>
+
+  <Button
+    android:id="@+id/clearLog"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:text="Clear Log"
+    app:layout_constraintTop_toBottomOf="@id/openFirstTitle"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    android:layout_marginTop="8dp"/>
+
+  <ScrollView
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    app:layout_constraintTop_toBottomOf="@id/clearLog"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    android:layout_marginTop="12dp">
+
+    <TextView
+      android:id="@+id/logView"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textSize="12sp"
+      android:typeface="monospace" />
+  </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
